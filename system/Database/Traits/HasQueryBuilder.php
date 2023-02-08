@@ -1,151 +1,160 @@
-<?php namespace system\Database\Traits;
+<?php
 
-use system\Database\DBConnection\DBConnection;
+namespace System\Database\Traits;
+
+use System\Database\DBConnection\DBConnection;
 
 trait HasQueryBuilder
 {
+
     private $sql = '';
     protected $where = [];
     private $orderBy = [];
     private $limit = [];
     private $values = [];
-    private $bindvalues = [];
+    private $bindValues = [];
 
-    protected function setSql($Query)
-    {
-        $this->sql = $Query;
+    protected function setSql($query){
+        $this->sql = $query;
     }
-    protected function getSql()
-    {
-        return $this->sql;
+    protected function getSql(){
+       return $this->sql;
     }
-    protected function resetSql()
-    {
+    protected function resetSql(){
         $this->sql = '';
     }
 
-    protected function setWhere($operator, $condition)
-    {
-        $this->where[] = ['operator' => $operator, 'condition' => $condition];
+    protected function setWhere($operator, $condition){
+
+        $array = ['operator' => $operator, 'condition' => $condition];
+        array_push($this->where, $array);
+
     }
 
-    protected function resetWhere()
-    {
+    protected function resetWhere(){
         $this->where = [];
     }
 
-    protected function setOrderBy($name, $expression)
-    {
-        $this->orderBy[] = $this->getAttributeName($name) . ' ' . $expression;
+    protected function setOrderBy($name, $expression){
+
+        array_push($this->orderBy, $this->getAttributeName($name) . ' ' . $expression);
+
     }
 
-    protected function resetOrderBy()
-    {
+    protected function resetOrderBy(){
         $this->orderBy = [];
     }
 
-    protected function setLimit($from, $number)
-    {
+    protected function setLimit($from, $number){
+
         $this->limit['from'] = (int) $from;
         $this->limit['number'] = (int) $number;
+
     }
 
-    protected function resetLimit()
-    {
+    protected function resetLimit(){
         unset($this->limit['from']);
         unset($this->limit['number']);
-
     }
 
-    protected function addValue($attribute, $value)
-    {
+
+    protected function addValue($attribute, $value){
+
         $this->values[$attribute] = $value;
-        $this->bindvalues[] = $value;
+        array_push($this->bindValues, $value);
+
     }
 
-    protected function removeValues()
-    {
+    protected function removeValues(){
         $this->values = [];
-        $this->bindvalues = [];
-
+        $this->bindValues = [];
     }
 
-    protected function resetQuery()
-    {
+    
+    protected function resetQuery(){
+
         $this->resetSql();
         $this->resetWhere();
         $this->resetOrderBy();
         $this->resetLimit();
         $this->removeValues();
+        
     }
 
-    protected function executeQuery()
-    {
+    protected function executeQuery(){
 
         $query = '';
         $query .= $this->sql;
-        if (!empty($this->where)) {
-            $wherestring = '';
-            foreach ($this->where as $where) {
-                ($wherestring == '') ? ($wherestring .= $where['condition']) : ($wherestring .= ' ' . $where['operator'] . ' ' . $where['condition']);
+
+        if(!empty($this->where)){
+
+            $whereString = '';
+            foreach($this->where as $where){
+                $whereString == '' ?  $whereString .= $where['condition'] : $whereString .= ' '.$where['operator'].' '.$where['condition'];
             }
-
-            $query .= ' WHERE ' . $wherestring;
+            $query .= ' WHERE '.$whereString;
         }
 
-        if (!empty($this->orderBy)) {
-            $query .= ' ORDER BY ' . implode(', ', $this->orderBy);
+        if(!empty($this->orderBy)){
+            $query .= ' ORDER BY '. implode(', ',$this->orderBy);
         }
-
-        if (!empty($this->limit)) {
-            $query .= ' LIMIT ' . $this->limit['from'] . ', ' . $this->limit['number'] . ' ';
+        if(!empty($this->limit)){
+            $query .= ' limit '.$this->limit['from'] . ' , '. $this->limit['number'].' ';
         }
-
         $query .= ' ;';
-        echo $query . '</hr>';
-
-        $pdoInstance = DBConnection::GetDBConnectionInstance();
+        echo $query.'<hr>/';
+        $pdoInstance = DBConnection::getDBConnectionInstance();
         $statement = $pdoInstance->prepare($query);
-        if (sizeof($this->bindvalues) > sizeof($this->values)) {
-            sizeof($this->bindvalues) > 0 ? $statement->execute($this->bindvalues) : $statement->execute();
-        } else {
-            sizeof($this->values) > 0 ? $statement->execute($this->values) : $statement->execute();
-
+        if(sizeof($this->bindValues) > sizeof($this->values))
+        {
+            sizeof($this->bindValues) > 0 ? $statement->execute($this->bindValues) : $statement->execute();
         }
-
+        else
+        {
+            sizeof($this->values) > 0 ? $statement->execute(array_values($this->values)) : $statement->execute();
+        }
         return $statement;
     }
 
+
     protected function getCount(){
-        $query = "SELECT COUNT(".$this->getTableName().".*) FROM ".$this->getTableName();
-        if (!empty($this->where)) {
-            $wherestring = '';
-            foreach ($this->where as $where) {
-                ($wherestring == '') ? ($wherestring .= $where['condition']) : ($wherestring .= ' ' . $where['operator'] . ' ' . $where['condition']);
+
+        $query = '';
+        $query .= "SELECT COUNT(".$this->getTableName().".*) FROM ". $this->getTableName();
+
+        if(!empty($this->where)){
+
+            $whereString = '';
+            foreach($this->where as $where){
+                $whereString == '' ?  $whereString .= $where['condition'] : $whereString .= ' '.$where['operator'].' '.$where['condition'];
             }
-
-            $query .= ' WHERE ' . $wherestring;
+            $query .= ' WHERE '.$whereString;
         }
-
         $query .= ' ;';
 
-        $pdoInstance = DBConnection::GetDBConnectionInstance();
+        $pdoInstance = DBConnection::getDBConnectionInstance();
         $statement = $pdoInstance->prepare($query);
-        if (sizeof($this->bindvalues) > sizeof($this->values)) {
-            sizeof($this->bindvalues) > 0 ? $statement->execute($this->bindvalues) : $statement->execute();
-        } else {
-            sizeof($this->values) > 0 ? $statement->execute($this->values) : $statement->execute();
+        if(sizeof($this->bindValues) > sizeof($this->values))
+        {
+            sizeof($this->bindValues) > 0 ? $statement->execute($this->bindValues) : $statement->execute();
         }
-
+        else
+        {
+            sizeof($this->values) > 0 ? $statement->execute(array_values($this->values)) : $statement->execute();
+        }
         return $statement->fetchColumn();
     }
 
     protected function getTableName(){
-        return ' `'.$this->table.'` ';
-    }
 
+        return ' `'.$this->table.'`';
+    }
+    
     protected function getAttributeName($attribute){
+
         return ' `'.$this->table.'`.`'.$attribute.'` ';
     }
     
+
+
 }

@@ -6,6 +6,18 @@ use System\Database\DBConnection\DBConnection;
 
 trait HasCRUD{
 
+    protected function createMethod($values){
+        $values = $this->arrayToCastEncodeValue($values);
+        $this->arrayToAttributes($values, $this);
+        return $this->saveMethod();
+    }
+    
+    protected function updateMethod($values){
+        $values = $this->arrayToCastEncodeValue($values);
+        $this->arrayToAttributes($values, $this);
+        return $this->saveMethod();
+    }
+
     protected function deleteMethod($id = null){
 
         $object = $this;
@@ -14,7 +26,7 @@ trait HasCRUD{
             $object = $this->findMethod($id);
             $this->resetQuery();
         }
-        $object->setSql("DELETE FROM ". $object->getTableName());
+        $object->setSql("DELETE FROM ".$object->getTableName());
         $object->setWhere("AND", $this->getAttributeName($this->primaryKey)." = ? ");
         $object->addValue($object->primaryKey, $object->{$object->primaryKey});
         return $object->executeQuery();
@@ -26,7 +38,6 @@ trait HasCRUD{
         $statement = $this->executeQuery();
         $data = $statement->fetchAll();
         if ($data){
-
            $this->arrayToObjects($data);
            return $this->collection;
         }
@@ -152,6 +163,28 @@ trait HasCRUD{
     }
 
 
+    protected function paginateMethod($perPage){
+
+        $totalRows = $this->getCount();
+        $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $totalPages = ceil($totalRows / $perPage);
+        $currentPage = min($currentPage, $totalPages);
+        $currentPage = max($currentPage, 1);
+        $currentRow = ($currentPage - 1) * $perPage;
+        $this->setLimit($currentRow, $perPage);
+        if($this->sql == ''){
+            $this->setSql("SELECT ".$this->getTableName().".* FROM ".$this->getTableName());
+        }
+        $statement = $this->executeQuery();
+        $data = $statement->fetchAll();
+        if ($data){
+           $this->arrayToObjects($data);
+           return $this->collection;
+        }
+        return [];
+    }
+
+
     protected function saveMethod(){
 
         $fillString = $this->fill();
@@ -175,9 +208,7 @@ trait HasCRUD{
             $differentVars = array_diff(array_keys($allVars), array_keys($defaultVars));
             foreach($differentVars as $attribute){
                 $this->inCastsAttributes($attribute) == true ? $this->registerAttribute($this, $attribute, $this->castEncodeValue($attribute, $object->$attribute)) : $this->registerAttribute($this, $attribute, $object->$attribute);
-
             }
-
         }
         $this->resetQuery();
         $this->setAllowedMethods(['update', 'delete', 'find']);

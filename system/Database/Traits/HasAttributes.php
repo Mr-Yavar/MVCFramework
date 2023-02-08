@@ -1,77 +1,84 @@
-<?php namespace system\Database\Traits;
+<?php
 
-use JetBrains\PhpStorm\Internal\ReturnTypeContract;
+namespace System\Database\Traits;
 
 trait HasAttributes{
 
 
-private function registerAttribute($object,string $attribute,$value){
-    $this->inCastsAttributes($attribute) == true ? $object->$attribute = $this->castDecodeValue($attribute,$value) : $object->$attribute = $value;
 
-}
+    private function registerAttribute($object, string $attribute, $value){
 
-protected function arrayToAttribute(array $array,$object = null){
-  if(!$object){
-      $className = get_called_class();
-      $object = new $className;
-  }
+       $this->inCastsAttributes($attribute) == true ? $object->$attribute = $this->castDecodeValue($attribute, $value) : $object->$attribute = $value;
 
-  foreach($array as $attribute=>$value){
-      if($this->inHidddenAttributes($attribute))
+    }
+
+    protected function arrayToAttributes(array $array, $object = null){
+
+        if(!$object){
+            $className = get_called_class();
+            $object = new $className;
+        }
+       foreach($array as $attribute=>$value){
+        if($this->inHiddenAttributes($attribute))
         continue;
-      $this->registerAttribute($object,$attribute,$value);
-  }
+        $this->registerAttribute($object, $attribute, $value);
+       }
+       return $object;
+    }
 
-  return $object;
-}
+    protected function arrayToObjects(array $array){
+        
+        $collection = [];
 
-protected function arrayToObjects(array $array){
-  $collection = [];
+        foreach ($array as $value){
+            $object = $this->arrayToAttributes($value);
+            array_push($collection, $object);
+        }
 
-  foreach($array as $value){
-    $object = $this->arrayToAttribute($array);
-    array_push($collection,$object);
-  }
-  $this->collection = $collection;
+        $this->collection = $collection;
 
-}
+    }
 
-private function inHidddenAttributes($attribute){
+    private function inHiddenAttributes($attribute){
 
-  return (in_array($attribute,$this->hidden));
-}
+        return in_array($attribute, $this->hidden);
 
-private function inCastsAttributes($attribute){
-  return (in_array($attribute,array_keys($this->casts))) ;
+    }
 
-}
+    private function inCastsAttributes($attribute){
 
-private function castDecodeValue($attributeKey,$value){
+        return in_array($attribute, array_keys($this->casts));
 
-  if($this->casts[$attributeKey] == 'array' || $this->casts[$attributeKey] == 'object')
-      return unserialize($value);
-  return $value;
-}
+    }
 
-private function castEncodeValue($attributeKey,$value){
+    private function castDecodeValue($attributeKey, $value){
 
-  if($this->casts[$attributeKey] == 'array' || $this->casts[$attributeKey] == 'object')
-      return serialize($value);
-  return $value;
-}
+        if($this->casts[$attributeKey] == 'array' || $this->casts[$attributeKey] == 'object'){
+            return unserialize($value);
+        }
 
-private function arrayToCastAttributes($values){
-  $newArray = [];
-  foreach($values as $attribute=>$value){
-    if($this->inCastsAttributes($attribute))
-      $newArray[$attribute] = $this->castEncodeValue($attribute,$value);
+        return $value;
 
-    $newArray[$attribute] = $value;
+    }
 
-  }
+    private function castEncodeValue($attributeKey, $value){
 
-  return $newArray;
-}
+        if($this->casts[$attributeKey] == 'array' || $this->casts[$attributeKey] == 'object'){
+            return serialize($value);
+        }
+
+        return $value;
+    }
+
+    private function arrayToCastEncodeValue($values){
+
+        $newArray = [];
+        foreach($values as $attribute=>$value){
+            $this->inCastsAttributes($attribute) == true ? $newArray[$attribute] = $this->castEncodeValue($attribute, $value) : $newArray[$attribute] = $value;
+
+        }   
+        return $newArray;
+    }
 
 
 }
