@@ -1,24 +1,30 @@
-<?php namespace App\Http\Controllers;
+<?php
 
+namespace App\Http\Controllers;
 
-class HomeController extends Controller{
+use System\Database\DBBuilder\DBBuilder;
+
+class HomeController extends Controller
+{
 
     public function index(){
-        echo "Home > index()";
     }
+
     public function create(){
-        echo "Home > create()";
+        echo "create method in HomeController";
+        view('app.create');
     }
     public function store(){
-        echo "Home > store()";
+        echo "store method in HomeController";
     }
     public function edit($id){
-        echo "Home > edit({$id})";
+        echo "edit method in HomeController";
     }
     public function update($id){
-        echo "Home > update({$id})";
+        echo "update method in HomeController";
     }
     public function destroy($id){
-        echo "Home > destroy({$id})";
+        echo "destroy method in HomeController";
     }
+
 }

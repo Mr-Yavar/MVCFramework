@@ -1,45 +1,44 @@
-<?php namespace System\Router\Web;
+<?php
+
+namespace System\Router\Web;
 
 class Route{
-    public static function get($url,$ExecuteMethod,$name=null){
-        //Get means Read Data
+
+    public static function get($url, $executeMethod, $name = null){
+
+        $executeMethod = explode('@', $executeMethod);
+        $class = $executeMethod[0];
+        $method = $executeMethod[1];
         global $routes;
-        $ExecuteMethod=explode("@",$ExecuteMethod);
-        $class=$ExecuteMethod[0];
-        $method=$ExecuteMethod[1];
-
-        array_push($routes['get'],array('url'=>trim($url,"/ "),'class'=>$class,'method'=>$method,'name'=>$name));
-
+        array_push($routes['get'], array('url' => trim($url, "/ "), 'class' => $class, 'method' => $method, 'name' => $name));
     }
 
-    public static function post($url,$ExecuteMethod,$name=null){
-        //Post means insert Data
+    public static function post($url, $executeMethod, $name = null){
+
+        $executeMethod = explode('@', $executeMethod);
+        $class = $executeMethod[0];
+        $method = $executeMethod[1];
         global $routes;
-        $ExecuteMethod=explode("@",$ExecuteMethod);
-        $class=$ExecuteMethod[0];
-        $method=$ExecuteMethod[1];
-
-        array_push($routes['post'],array('url'=>trim($url,"/ "),'class'=>$class,'method'=>$method,'name'=>$name));
-
+        array_push($routes['post'], array('url' => trim($url, "/ "), 'class' => $class, 'method' => $method, 'name' => $name));
     }
-    public static function put($url,$ExecuteMethod,$name=null){
-        //Put or Patch means Update Data, or Insert if a new Id
+
+    public static function put($url, $executeMethod, $name = null){
+
+        $executeMethod = explode('@', $executeMethod);
+        $class = $executeMethod[0];
+        $method = $executeMethod[1];
         global $routes;
-        $ExecuteMethod=explode("@",$ExecuteMethod);
-        $class=$ExecuteMethod[0];
-        $method=$ExecuteMethod[1];
-
-        array_push($routes['put'],array('url'=>trim($url,"/ "),'class'=>$class,'method'=>$method,'name'=>$name));
-
+        array_push($routes['put'], array('url' => trim($url, "/ "), 'class' => $class, 'method' => $method, 'name' => $name));
     }
-    public static function delete($url,$ExecuteMethod,$name=null){
-        //Delete means Delete Data
+
+    public static function delete($url, $executeMethod, $name = null){
+
+        $executeMethod = explode('@', $executeMethod);
+        $class = $executeMethod[0];
+        $method = $executeMethod[1];
         global $routes;
-        $ExecuteMethod=explode("@",$ExecuteMethod);
-        $class=$ExecuteMethod[0];
-        $method=$ExecuteMethod[1];
-
-        array_push($routes['delete'],array('url'=>trim($url,"/ "),'class'=>$class,'method'=>$method,'name'=>$name));
-
+        array_push($routes['delete'], array('url' => trim($url, "/ "), 'class' => $class, 'method' => $method, 'name' => $name));
     }
+
+
 }

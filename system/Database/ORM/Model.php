@@ -1,26 +1,26 @@
-<?php namespace system\Database\ORM;
+<?php
 
-use system\Database\Traits\HasCRUD;
-use system\Database\Traits\HasAttributes;
-use system\Database\Traits\HasMethodColor;
-use system\Database\Traits\HasQueryBuilder;
-use system\Database\Traits\HasRelation;
-//use system\Database\Traits\HasSoftDelete;
+namespace System\Database\ORM;
 
-abstract class Model{
+use System\Database\Traits\HasCRUD;
+use System\Database\Traits\HasAttributes;
+use System\Database\Traits\HasMethodCaller;
+use System\Database\Traits\HasQueryBuilder;
+use System\Database\Traits\HasRelation;
 
-use HasCRUD,HasRelation,HasQueryBuilder,HasMethodColor,/*HasSoftDelete,*/HasAttributes;
+abstract class Model {
 
-protected $table;
-protected $fillable=[];
-protected $hidden=[];
-protected $casts=[];
-protected $primaryKey='id';
-protected $createdAt='created_at';
-protected $updatedAt='updated_at';
-protected $deletedAt=null;
-protected $collection=[];
+    use HasCRUD,HasAttributes,HasMethodCaller,HasQueryBuilder,HasRelation;
 
+    protected $table;
+    protected $fillable = [];
+    protected $hidden = [];
+    protected $casts = [];
+    protected $primaryKey = 'id';
+    protected $createdAt = 'created_at';
+    protected $updatedAt = 'updated_at';
+    protected $deletedAt = null;
+    protected $collection = [];
 
 
 }

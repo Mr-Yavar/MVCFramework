@@ -164,7 +164,7 @@ trait HasCRUD{
 
 
     protected function paginateMethod($perPage){
-
+   
         $totalRows = $this->getCount();
         $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $totalPages = ceil($totalRows / $perPage);

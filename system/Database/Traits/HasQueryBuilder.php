@@ -102,17 +102,9 @@ trait HasQueryBuilder
             $query .= ' limit '.$this->limit['from'] . ' , '. $this->limit['number'].' ';
         }
         $query .= ' ;';
-        echo $query.'<hr>/';
         $pdoInstance = DBConnection::getDBConnectionInstance();
         $statement = $pdoInstance->prepare($query);
-        if(sizeof($this->bindValues) > sizeof($this->values))
-        {
-            sizeof($this->bindValues) > 0 ? $statement->execute($this->bindValues) : $statement->execute();
-        }
-        else
-        {
-            sizeof($this->values) > 0 ? $statement->execute(array_values($this->values)) : $statement->execute();
-        }
+       sizeof($this->bindValues) > 0 ? $statement->execute($this->bindValues) : $statement->execute();
         return $statement;
     }
 
@@ -120,7 +112,7 @@ trait HasQueryBuilder
     protected function getCount(){
 
         $query = '';
-        $query .= "SELECT COUNT(".$this->getTableName().".*) FROM ". $this->getTableName();
+        $query .= "SELECT COUNT(*) FROM ". $this->getTableName();
 
         if(!empty($this->where)){
 
